@@ -38,12 +38,12 @@ jobs:
     - name: Install SSH key
       uses: webfactory/ssh-agent@v0.5.3
       with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        ssh-private-key: ${{ secrets.HOST_SSH_PRIVATE_KEY }}
 
     - name: Deploy to server
       env:
-        HOST: ${{ secrets.SERVER_HOST }}
-        USERNAME: ${{ secrets.SERVER_USERNAME }}
+        HOST: ${{ secrets.HOST_SERVER }}
+        USERNAME: ${{ secrets.HOST_USER_NAME }}
         DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       run: |
         ssh -o StrictHostKeyChecking=no $USERNAME@$HOST "docker pull $DOCKER_USERNAME/todo-app:latest && docker stop todo-app || true && docker rm todo-app || true && docker run -d -p 8080:80 --name todo-app $DOCKER_USERNAME/todo-app:latest"
