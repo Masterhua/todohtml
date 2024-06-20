@@ -3,7 +3,7 @@ name: CI/CD
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -25,12 +25,16 @@ jobs:
           ${{ runner.os }}-buildx-
 
     - name: Log in to Docker Hub
-      run: echo ${{ secrets.DOCKER_TOKEN }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+      run: |
+        echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Build and push
       run: |
-        docker build --push --tag ${{ secrets.DOCKER_USERNAME }}/todo-app:latest .
-        docker tag ${{ secrets.DOCKER_USERNAME }}/todo-app:latest ${{ secrets.DOCKER_USERNAME }}/todo-app:${{ github.sha }}
+        docker build --tag ${{ secrets.DOCKER_USERNAME }}/todo-app:latest .
+        docker push ${{ secrets.DOCKER_USERNAME }}/todo-app:latest
 
     - name: Deploy to server
       env:
